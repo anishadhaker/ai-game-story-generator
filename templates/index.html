@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI GAME STORY GENERATOR</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🎮 AI GAME STORY GENERATOR</h1>
+
+    <input id="name" placeholder="Player Name">
+
+    <select id="genre">
+        <option>Cyberpunk</option>
+        <option>Fantasy</option>
+        <option>Horror</option>
+        <option>Action</option>
+    </select>
+
+    <input id="character" placeholder="Character Type">
+    <input id="enemy" placeholder="Enemy Type">
+
+    <button onclick="generateStory()">START GAME</button>
+    <button onclick="resetGame()">🔁 New Game</button>
+
+    <div id="loading" class="loading">🌍 Generating World...</div>
+
+    <!-- 🎮 GAME NAME -->
+    <div id="gameNameBox" class="game-name"></div>
+
+    <!-- 🌆 BACKGROUND IMAGE -->
+    <img id="bgImage" class="bg-image">
+
+    <!-- 🧾 STORY -->
+    <div id="storyBox" class="story-box"></div>
+
+</div>
+
+<script>
+function generateStory() {
+    let name = document.getElementById("name").value;
+    let genre = document.getElementById("genre").value;
+    let character = document.getElementById("character").value;
+    let enemy = document.getElementById("enemy").value;
+
+    document.getElementById("loading").style.display = "block";
+    document.getElementById("storyBox").innerText = "";
+    document.getElementById("gameNameBox").innerText = "";
+
+    fetch("/generate", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({name, genre, character, enemy})
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        document.getElementById("loading").style.display = "none";
+
+        // 🎮 GAME NAME
+        document.getElementById("gameNameBox").innerText = "🎮 " + data.game_name;
+
+        // 🧾 STORY
+        document.getElementById("storyBox").innerText = data.story;
+
+        // 🌆 HYBRID BACKGROUND SYSTEM
+        let genre = data.genre;
+
+        let bg = "";
+
+        if (genre === "Horror") {
+            bg = "https://images.unsplash.com/photo-1509248961158-e54f6934749c";
+        }
+        else if (genre === "Cyberpunk") {
+            bg = "https://images.unsplash.com/photo-1504384308090-c894fdcc538d";
+        }
+        else if (genre === "Fantasy") {
+            bg = "https://images.unsplash.com/photo-1605902711622-cfb43c4437d3";
+        }
+        else if (genre === "Action") {
+            bg = "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80";
+        }
+
+        document.getElementById("bgImage").src = bg;
+    });
+}
+
+function resetGame() {
+    document.getElementById("name").value = "";
+    document.getElementById("character").value = "";
+    document.getElementById("enemy").value = "";
+    document.getElementById("storyBox").innerText = "";
+    document.getElementById("gameNameBox").innerText = "";
+    document.getElementById("bgImage").src = "";
+}
+</script>
+
+</body>
+</html>
